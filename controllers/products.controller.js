@@ -160,4 +160,26 @@ function updateProduct(req, res, resultProduct) {
   });
 }
 
+router.delete("/api/delete/product/:id", async (req, res) => {
+  try {
+    // query ว่ามี ข้อมูลของ product ที่เราต้องการจะแก้
+    const deleteResult = await db.Products.destroy({
+      where: {
+        id: req.params.id,
+      },
+    });
+
+    // ถ้าไม่พบข้อมูลจะให้ 404 และหยุดการทำงาน
+    // สำเร็จ 204
+    if (!deleteResult) {
+      return res.status(404).json({ message: "ไม่พบข้อมูลสินค้า" });
+    } else {
+      return res.status(204).json({ message: JSON.stringify("ลบข้อมูลสำเร็จ") });
+    }
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 module.exports = router;
