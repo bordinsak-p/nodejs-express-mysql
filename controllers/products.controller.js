@@ -65,8 +65,7 @@ router.post("/api/add/product", (req, res) => {
       price: req.body.price,
       image: req.file ? req.file.filename : undefined,
     };
-
-    const fileName = req.file ? req.file.filename : undefined;
+    
     try {
       const product = await db.Products.create(productBean);
       res.status(201).json(product);
