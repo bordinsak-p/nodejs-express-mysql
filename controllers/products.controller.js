@@ -17,7 +17,6 @@ const { log } = require("console");
 // เมื่อ query จำเป็นต้องใส่ async และ await เพื่อรอการ query ใน database ให้เสร็จ
 router.get("/api/products", async (req, res) => {
   try {
-    // const result = await db.Products.findAll();
     const result = await db.Products.findAll({
       order: [["id", "DESC"]],
     });
@@ -52,18 +51,11 @@ router.post("/api/add/product", (req, res) => {
     if (next instanceof multer.MulterError) {
       console.log(`error: ${JSON.stringify(next)}`);
       return res.status(500).json({ message: next });
-    } else if (next) {
-      console.log(`error: ${JSON.stringify(next)}`);
-      return res.status(500).json({ message: next });
-    }
-
+    } 
+    
     // num1 = [1,2,3,4]
     // num2 = [1,2] -> theStructuring spilt array -> num3 = [...num1, ...num2]
-
-    // const productBean = {
-    //     ...req.body,
-    //     image: req.file ? req.file.filename : undefined
-    // }
+    // ...req.body
 
     const productBean = {
       name: req.body.name,
@@ -107,9 +99,6 @@ function updateProduct(req, res, resultProduct) {
     if (err instanceof multer.MulterError) {
       console.log(`error: ${JSON.stringify(err)}`);
       return res.status(500).json({ message: err });
-    } else if (err) {
-      console.log(`error: ${JSON.stringify(err)}`);
-      return res.status(500).json({ message: err });
     }
 
     const productBean = {
@@ -127,12 +116,10 @@ function updateProduct(req, res, resultProduct) {
           fs.unlinkSync(path.join(__dirname, "../images", resultProduct.image));
         }
       } catch (unlinkErr) {
-        (error) => {
-          res.send(500).json({
-            message: "เกิดข้อผิดพลาดในการลบไฟล์เดิม",
-            error: unlinkErr,
-          });
-        };
+        res.send(500).json({
+          message: "เกิดข้อผิดพลาดในการลบไฟล์เดิม",
+          error: unlinkErr,
+        });
       }
 
       productBean.image = req.file.filename; // ถ้ามีการอัปโหลดไฟล์ใหม่
