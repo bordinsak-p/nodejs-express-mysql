@@ -178,6 +178,7 @@ router.delete("/api/delete/product/:id", async (req, res) => {
       return res.status(404).json({ message: "ไม่พบข้อมูลสินค้า" });
     }
 
+    // ถ้า query มาแล้วมีรูปให้ทำการลบรูป
     try {
       if (productToDelete.image) {
         fs.unlinkSync(path.join(__dirname, "../images", productToDelete.image));
