@@ -12,6 +12,7 @@ const upload = multer(multerConfig.config).single(multerConfig.keyUpload);
 
 // import model เรียกใช้งาน การ conncect database
 const db = require("../models");
+const { log } = require("console");
 
 // เมื่อ query จำเป็นต้องใส่ async และ await เพื่อรอการ query ใน database ให้เสร็จ
 router.get("/api/products", async (req, res) => {
@@ -120,15 +121,18 @@ function updateProduct(req, res, resultProduct) {
     // เช็คว่าถ้ามีการอัปโหลไฟล์เข้ามาให้ทำการลบไฟล์เก่าออกก่อน
     if (req.file) {
       // ลบไฟล์เก่า (ถ้ามี)
-      if (resultProduct.image) {
-        fs.unlink(
-          path.join(__dirname, "../images", resultProduct.image),
-          (unlinkErr) => {
-            if (unlinkErr) {
-              console.error("เกิดข้อผิดพลาดในการลบไฟล์เดิม", unlinkErr);
-            }
-          }
-        );
+
+      try {
+        if (resultProduct.image) {
+          fs.unlinkSync(path.join(__dirname, "../images", resultProduct.image));
+        }
+      } catch (unlinkErr) {
+        (error) => {
+          res.send(500).json({
+            message: "เกิดข้อผิดพลาดในการลบไฟล์เดิม",
+            error: unlinkErr,
+          });
+        };
       }
 
       productBean.image = req.file.filename; // ถ้ามีการอัปโหลดไฟล์ใหม่
@@ -162,7 +166,28 @@ function updateProduct(req, res, resultProduct) {
 
 router.delete("/api/delete/product/:id", async (req, res) => {
   try {
-    // query ว่ามี ข้อมูลของ product ที่เราต้องการจะแก้
+    // query ว่ามีข้อมูลของ product ที่เราต้องการจะลบ
+    const productToDelete = await db.Products.findOne({
+      where: {
+        id: req.params.id,
+      },
+    });
+
+    // ถ้าไม่พบข้อมูลจะให้ 404 และหยุดการทำงาน
+    if (!productToDelete) {
+      return res.status(404).json({ message: "ไม่พบข้อมูลสินค้า" });
+    }
+
+    try {
+      if (productToDelete.image) {
+        fs.unlinkSync(path.join(__dirname, "../images", productToDelete.image));
+      }
+    } catch (error) {
+      return res
+        .send(500)
+        .json({ message: "เกิดข้อผิดพลาดในการลบข้อมูล", error: error });
+    }
+
     const deleteResult = await db.Products.destroy({
       where: {
         id: req.params.id,
@@ -171,12 +196,11 @@ router.delete("/api/delete/product/:id", async (req, res) => {
 
     // ถ้าไม่พบข้อมูลจะให้ 404 และหยุดการทำงาน
     // สำเร็จ 204
-    if (!deleteResult) {
-      return res.status(404).json({ message: "ไม่พบข้อมูลสินค้า" });
+    if (deleteResult === 1) {
+      return res.status(204).json({ message: "ลบข้อมูลสำเร็จ" });
     } else {
-      return res.status(204).json({ message: JSON.stringify("ลบข้อมูลสำเร็จ") });
+      return res.status(404).json({ message: "ไม่พบข้อมูลสินค้า" });
     }
-
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
