@@ -1,5 +1,10 @@
+# nodemodule and vscode debugger setting
 /node_modules
 /.vscode
 
+# folder
+images/
+
+# npm packages
 package-lock.json
 package.json

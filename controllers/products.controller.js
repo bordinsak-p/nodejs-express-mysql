@@ -12,7 +12,7 @@ const upload = multer(multerConfig.config).single(multerConfig.keyUpload);
 
 // import model เรียกใช้งาน การ conncect database
 const db = require("../models");
-const { log } = require("console");
+
 
 // เมื่อ query จำเป็นต้องใส่ async และ await เพื่อรอการ query ใน database ให้เสร็จ
 router.get("/api/products", async (req, res) => {
