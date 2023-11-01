@@ -3,7 +3,7 @@
 /.vscode
 
 # folder
-images/
+images/*
 
 # npm packages
 package-lock.json
