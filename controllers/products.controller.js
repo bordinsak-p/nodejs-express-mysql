@@ -15,7 +15,7 @@ const db = require("../models");
 
 
 // เมื่อ query จำเป็นต้องใส่ async และ await เพื่อรอการ query ใน database ให้เสร็จ
-router.get("/api/products", async (req, res) => {
+router.get("/getProducts", async (req, res) => {
   try {
     const result = await db.Products.findAll({
       order: [["id", "DESC"]],
@@ -27,7 +27,7 @@ router.get("/api/products", async (req, res) => {
 });
 
 // get params
-router.get("/api/products/:id", async (req, res) => {
+router.get("/getProductsForPrm/:id", async (req, res) => {
   try {
     const result = await db.Products.findOne({
       where: {
@@ -46,7 +46,7 @@ router.get("/api/products/:id", async (req, res) => {
 });
 
 // insert data to database
-router.post("/api/add/product", (req, res) => {
+router.post("/addProduct", (req, res) => {
   upload(req, res, async (next) => {
     if (next instanceof multer.MulterError) {
       console.log(`error: ${JSON.stringify(next)}`);
@@ -73,7 +73,7 @@ router.post("/api/add/product", (req, res) => {
   });
 });
 
-router.put("/api/update/product/:id", async (req, res) => {
+router.put("/updateProductPms/:id", async (req, res) => {
   try {
     // query ว่ามี ข้อมูลของ product ที่เราต้องการจะแก้
     const resultProduct = await db.Products.findOne({
@@ -151,7 +151,7 @@ function updateProduct(req, res, resultProduct) {
   });
 }
 
-router.delete("/api/delete/product/:id", async (req, res) => {
+router.delete("/deleteProductPms/:id", async (req, res) => {
   try {
     // query ว่ามีข้อมูลของ product ที่เราต้องการจะลบ
     const productToDelete = await db.Products.findOne({
