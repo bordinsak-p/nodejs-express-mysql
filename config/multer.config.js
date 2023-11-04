@@ -45,12 +45,11 @@ module.exports = multerConfig = {
         cb(null, true);
       } else {
         // ไม่เข้าเงื่อไขไหนเลยจะส่ง error ออกไป
-        cb({ message: 'File type not supported'}, false);
+        cb({ message: "File type not supported"}, false);
       }
 
-    //   // ถ้า return เป็น false จะทำการ reject
-    //   cb(null, false);
-
+      //   // ถ้า return เป็น false จะทำการ reject
+      //   cb(null, false);
     },
   },
   keyUpload: "image",
